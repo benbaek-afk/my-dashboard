@@ -1,0 +1,232 @@
+{
+  "actionfit.kr": {
+    "name": "액션핏",
+    "is_game": true,
+    "recent_camp": "후르츠블라스트_UA_AOS_2602_통합"
+  },
+  "altagram.com": {
+    "name": "알타그램",
+    "is_game": true,
+    "recent_camp": "팝 블럭 퍼즐_UA_AOS_2604_통합"
+  },
+  "arumgames.wixsite.com": {
+    "name": "아룸게임즈",
+    "is_game": true,
+    "recent_camp": "판타지타운_UA_All_2602_통합"
+  },
+  "corp.joycity.com/ko/main": {
+    "name": "조이시티",
+    "is_game": true,
+    "recent_camp": "캐리비안의해적_UA(멀티)_IOS_2602_통합"
+  },
+  "dreamgames.com/": {
+    "name": "드림게임즈",
+    "is_game": true,
+    "recent_camp": "로얄매치(글로벌)_UA_ALL_2602_통합"
+  },
+  "egamepia.co.kr": {
+    "name": "게임피아",
+    "is_game": true,
+    "recent_camp": "머지쿠키섬_UA_IOS_2602_통합"
+  },
+  "facebook.com/mergesurvival.official/": {
+    "name": "스트키핸즈",
+    "is_game": true,
+    "recent_camp": "머지캣츠_UA_AOS_2602_통합"
+  },
+  "greedy-game.com": {
+    "name": "greedygame",
+    "is_game": true,
+    "recent_camp": "WordMaker_UA_AOS_2602_통합"
+  },
+  "gryphline.com/ko-kr/home": {
+    "name": "그리프라인",
+    "is_game": true,
+    "recent_camp": "명일방주:엔드필드_UA_AOS_2602_통합"
+  },
+  "highscoregames.cc": {
+    "name": "하이스코어게임즈",
+    "is_game": true,
+    "recent_camp": "머지캠프_UA_IOS_2602_통합"
+  },
+  "kingkongsoft.kr": {
+    "name": "킹콩소프트",
+    "is_game": true,
+    "recent_camp": "정사_UA_AOS_2602_통합"
+  },
+  "line.games/": {
+    "name": "라인게임즈",
+    "is_game": true,
+    "recent_camp": "대항해시대 오리진_UA_AOS_2603_통합"
+  },
+  "metaboneent.com/": {
+    "name": "메타본 엔터테인먼트",
+    "is_game": true,
+    "recent_camp": "건틀렛_UA_IOS_2602_통합"
+  },
+  "mobigames.co.kr": {
+    "name": "모비게임즈",
+    "is_game": true,
+    "recent_camp": "엘트릭스_UA_ALL_2604"
+  },
+  "neogames.co.kr": {
+    "name": "네오게임즈",
+    "is_game": true,
+    "recent_camp": "레알팜 크래프트_UA_AOS_2602_통합"
+  },
+  "neowiz.com": {
+    "name": "네오위즈",
+    "is_game": true,
+    "recent_camp": "고양이와스프:고양이키우기_UA_AOS_2602_통합"
+  },
+  "nexon.com": {
+    "name": "넥슨",
+    "is_game": true,
+    "recent_camp": "마비노기_UA_IOS_2602_통합"
+  },
+  "pivotgames.net": {
+    "name": "피벗게임즈",
+    "is_game": true,
+    "recent_camp": "퀸즈캐슬_UA_IOS_2602_통합"
+  },
+  "potatoplay.com": {
+    "name": "포테이토플레이",
+    "is_game": true,
+    "recent_camp": "Merge Restaurant_UA_IOS_2604_통합"
+  },
+  "reigntalk.co.kr": {
+    "name": "레인토크",
+    "is_game": true,
+    "recent_camp": "아마시아_UA(멀티)_AOS_2604"
+  },
+  "superbox.kr": {
+    "name": "슈퍼박스",
+    "is_game": true,
+    "recent_camp": "햄스키친_UA_AOS_2602_통합"
+  },
+  "topapp.games/": {
+    "name": "탑앱게임즈",
+    "is_game": true,
+    "recent_camp": "LUDUS 머지아레나_UA_ALL_2604"
+  },
+  "tqgame.kr": {
+    "name": "TQ게임즈",
+    "is_game": true,
+    "recent_camp": "조조의꿈_UA_AOS_2601"
+  },
+  "treeplla.com": {
+    "name": "넵튠",
+    "is_game": true,
+    "recent_camp": "고양이 오피스_UA_IOS_2602_통합"
+  },
+  "vfivegames.co.kr": {
+    "name": "V5게임즈",
+    "is_game": true,
+    "recent_camp": "실크로드어게인_UA_AOS_2604_통합"
+  },
+  "wemademax.com": {
+    "name": "위메이드맥스",
+    "is_game": true,
+    "recent_camp": "악마단돌겨억_UA_AOS_2602_통합"
+  },
+  "comup.co.kr": {
+    "name": "컴업",
+    "is_game": false,
+    "recent_camp": "금한돈_UA_AOS_2603_카카오M"
+  },
+  "cap-cloud.com": {
+    "name": "캡클라우드",
+    "is_game": true,
+    "recent_camp": "크로스림:오디세이_UA_AOS_2603_통합"
+  },
+  "realfarmmarket.co.kr": {
+    "name": "레알팜",
+    "is_game": true,
+    "recent_camp": "레알팜_UA_AOS_2602_통합"
+  },
+  "spcomes.com": {
+    "name": "스프링컴즈",
+    "is_game": true,
+    "recent_camp": "헬로타운_UA_ALL_2601_통합"
+  },
+  "1self.world": {
+    "name": "",
+    "is_game": false,
+    "recent_camp": "MyB_UA_ALL_2604_카카오M"
+  },
+  "albamon.com": {
+    "name": "알바몬",
+    "is_game": false,
+    "recent_camp": "잡코리아 앱실행_UA_ALL_2604_카카오M"
+  },
+  "babathe.com": {
+    "name": "",
+    "is_game": false,
+    "recent_camp": "바바더닷컴_UA_ALL_2604_카카오M"
+  },
+  "bigo.tv/ko": {
+    "name": "비고라이브",
+    "is_game": false,
+    "recent_camp": "비고라이브_UA_AOS_2604"
+  },
+  "dabangapp.com": {
+    "name": "다방",
+    "is_game": false,
+    "recent_camp": "다방_UA_AOS_2604_카카오M"
+  },
+  "dongwonfnb.com": {
+    "name": "동원",
+    "is_game": false,
+    "recent_camp": "동원몰_UA_ALL_2604_카카오M"
+  },
+  "hnsmall.com": {
+    "name": "현대N몰",
+    "is_game": false,
+    "recent_camp": "홈앤쇼핑_UA_AOS_2604_카카오M"
+  },
+  "hsmoa.com": {
+    "name": "홈쇼핑모아",
+    "is_game": false,
+    "recent_camp": "홈쇼핑모아_UA_AOS_2603_카카오M"
+  },
+  "kakaostyle.com": {
+    "name": "카카오스타일",
+    "is_game": false,
+    "recent_camp": "포스티_UA_AOS_2604_카카오M"
+  },
+  "ko.aliexpress.com": {
+    "name": "알리익스프레스",
+    "is_game": false,
+    "recent_camp": "알리익스프레스(CAC)_UA_ALL_2604_카카오M"
+  },
+  "lottemart.com": {
+    "name": "롯데마트",
+    "is_game": false,
+    "recent_camp": "롯데마트제타_UA_AOS_2602"
+  },
+  "nsmall.com": {
+    "name": "NS홈쇼핑",
+    "is_game": false,
+    "recent_camp": "NS홈쇼핑_UA_AOS_2602_카카오M"
+  },
+  "selfplanner.co.kr": {
+    "name": "",
+    "is_game": false,
+    "recent_camp": "셀프플래너_UA_AOS_2602"
+  },
+  "shinsegaetvshopping.com": {
+    "name": "신세계TV쇼핑",
+    "is_game": false,
+    "recent_camp": "신세계라이브쇼핑_UA_ALL_2604_카카오M"
+  },
+  "sikorea.co.kr": {
+    "name": "",
+    "is_game": false,
+    "recent_camp": "신세계V(첫구매웰컴딜)_UA_ALL_2604"
+  },
+  "zoom.us/ko": {
+    "name": "줌",
+    "is_game": false,
+    "recent_camp": "ZUM_UA_ALL_2604_카카오M"
+  }
+}

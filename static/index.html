@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game UA Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f2f7;
+  --sidebar:#162040;
+  --sidebar-hover:rgba(255,255,255,.06);
+  --sidebar-active:rgba(255,255,255,.12);
+  --card:#ffffff;
+  --border:#e8edf5;
+  --text:#1e2a3a;
+  --muted:#8a96a8;
+  --light:#f7f9fc;
+  --primary:#4f6ef7;
+  --primary-dim:rgba(79,110,247,.1);
+  --green:#10b981;
+  --green-dim:rgba(16,185,129,.1);
+  --red:#ef4444;
+  --red-dim:rgba(239,68,68,.1);
+  --purple:#8b5cf6;
+  --purple-dim:rgba(139,92,246,.1);
+  --accent:#06b6d4;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:240px;min-height:100vh;background:var(--sidebar);
+  display:flex;flex-direction:column;
+  position:fixed;left:0;top:0;bottom:0;z-index:100;
+  box-shadow:4px 0 20px rgba(0,0,0,.18);
+}
+.sidebar-logo{
+  padding:1.6rem 1.4rem 1.3rem;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  display:flex;align-items:center;gap:.85rem;
+}
+.logo-icon{
+  width:38px;height:38px;border-radius:10px;
+  background:linear-gradient(135deg,#4f6ef7,#7c3aed);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;flex-shrink:0;
+  box-shadow:0 4px 12px rgba(79,110,247,.4);
+}
+.logo-text .title{color:#fff;font-weight:700;font-size:.92rem;letter-spacing:-.01em}
+.logo-text .sub{color:rgba(255,255,255,.3);font-size:.63rem;margin-top:2px}
+.sidebar-section{padding:.9rem 1.4rem .3rem;color:rgba(255,255,255,.2);font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em}
+.nav-item{
+  display:flex;align-items:center;gap:.75rem;
+  padding:.72rem 1.1rem;margin:.1rem .7rem;
+  border-radius:9px;cursor:pointer;
+  color:rgba(255,255,255,.45);font-size:.875rem;font-weight:500;
+  transition:all .18s ease;text-decoration:none;
+}
+.nav-item:hover{background:var(--sidebar-hover);color:rgba(255,255,255,.75)}
+.nav-item.active{
+  background:#4f6ef7;color:#fff;font-weight:600;
+  box-shadow:0 4px 14px rgba(79,110,247,.4);
+}
+.nav-item .icon{font-size:.95rem;width:20px;text-align:center;opacity:.85}
+.sidebar-footer{
+  margin-top:auto;padding:.9rem 1.4rem;
+  border-top:1px solid rgba(255,255,255,.07);
+  color:rgba(255,255,255,.25);font-size:.67rem;
+  display:flex;align-items:center;gap:.5rem;
+}
+.sidebar-footer::before{content:'●';color:#10b981;font-size:.5rem}
+
+/* ── MAIN ── */
+.main{margin-left:240px;flex:1;padding:2rem 2.25rem 3rem;min-height:100vh}
+
+/* ── PAGE HEADER ── */
+.page-header{margin-bottom:1.75rem}
+.page-header h1{font-size:1.5rem;font-weight:800;color:var(--text);letter-spacing:-.04em;margin-bottom:.25rem}
+.page-header p{color:var(--muted);font-size:.83rem}
+
+/* ── TOPBAR ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.75rem}
+.topbar-left h1{font-size:1.5rem;font-weight:800;color:var(--text);letter-spacing:-.04em;margin-bottom:.2rem}
+.topbar-left p{color:var(--muted);font-size:.83rem}
+.topbar-right{display:flex;gap:.6rem}
+
+/* ── KPI CARDS ── */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.1rem;margin-bottom:1.5rem}
+.kpi-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:1.4rem 1.5rem;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+  transition:transform .2s,box-shadow .2s;
+  position:relative;overflow:hidden;
+}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.1)}
+.kpi-label{font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;display:flex;align-items:center;justify-content:space-between}
+.kpi-label span.info{color:#d1d9e6;font-size:.75rem;cursor:default}
+.kpi-value{font-size:1.8rem;font-weight:800;color:var(--text);letter-spacing:-.04em;line-height:1.1;margin-bottom:.5rem}
+.kpi-divider{height:1px;background:var(--border);margin:.7rem 0}
+.kpi-footer{font-size:.75rem;color:var(--text);font-weight:600;display:flex;align-items:center;gap:.4rem}
+.kpi-footer .lbl{color:var(--muted);font-weight:400}
+.kpi-badge-up{color:var(--green);font-weight:700;display:inline-flex;align-items:center;gap:.15rem}
+.kpi-badge-down{color:var(--red);font-weight:700;display:inline-flex;align-items:center;gap:.15rem}
+.kpi-sub{font-size:.72rem;color:var(--muted);margin-top:.3rem}
+
+/* ── CHART CARD ── */
+.chart-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:1.4rem 1.6rem;margin-bottom:1.5rem;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+}
+.chart-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.chart-card-header h3{font-size:.92rem;font-weight:700;color:var(--text)}
+.chart-legend{display:flex;gap:1.25rem}
+.legend-item{display:flex;align-items:center;gap:.4rem;font-size:.76rem;color:var(--muted);font-weight:500}
+.legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.48rem 1rem;border-radius:9px;border:none;cursor:pointer;
+  font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;
+  transition:all .18s ease;white-space:nowrap;
+}
+.btn-primary{background:#4f6ef7;color:#fff;box-shadow:0 3px 10px rgba(79,110,247,.3);font-weight:600}
+.btn-primary:hover{background:#3d5de6;box-shadow:0 5px 16px rgba(79,110,247,.4);transform:translateY(-1px)}
+.btn-outline{background:#fff;color:#4f6ef7;border:1.5px solid #dce4f8}
+.btn-outline:hover{background:#f0f4ff;border-color:#4f6ef7}
+.btn-ghost{background:transparent;color:var(--muted);border:1.5px solid var(--border)}
+.btn-ghost:hover{background:#fff;color:var(--text)}
+.btn-sm{padding:.32rem .75rem;font-size:.76rem}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
+
+/* ── INPUTS ── */
+.input-group{display:flex;flex-direction:column;gap:.3rem}
+.input-group label{font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+input[type=text],input[type=date],select{
+  background:#fff;color:var(--text);
+  border:1.5px solid var(--border);
+  border-radius:10px;padding:.5rem .9rem;
+  font-family:'Inter',sans-serif;font-size:.875rem;
+  transition:border .18s;outline:none;width:100%;
+}
+input:focus,select:focus{border-color:#4f6ef7;box-shadow:0 0 0 3px rgba(79,110,247,.1)}
+input::placeholder{color:#c8d0dc}
+
+/* ── FILTER BAR ── */
+.filter-bar{
+  display:flex;align-items:flex-end;gap:.75rem;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:1.1rem 1.25rem;margin-bottom:1.25rem;
+  flex-wrap:wrap;box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+.filter-bar .input-group{min-width:130px;flex:1}
+
+/* ── TABLE ── */
+.table-wrap{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;overflow:hidden;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+}
+.table-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.9rem 1.25rem;border-bottom:1px solid var(--border);
+}
+.table-title{font-size:.85rem;font-weight:700;color:var(--text)}
+table{width:100%;border-collapse:collapse}
+thead th{
+  background:var(--light);color:var(--muted);
+  font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+  padding:.65rem 1rem;text-align:left;
+  border-bottom:1px solid var(--border);white-space:nowrap;
+}
+tbody td{
+  padding:.6rem 1rem;font-size:.84rem;color:#3a4a5c;
+  border-bottom:1px solid #f2f5fa;
+}
+tbody tr:hover td{background:#f7f9fd}
+tbody tr:last-child td{border-bottom:none}
+
+/* 합계 행 */
+tr.summary-row td{
+  background:#f0f4ff;font-weight:700;color:var(--text);
+  border-bottom:2px solid #dce4f8;
+  font-size:.84rem;
+}
+
+/* ── BADGES ── */
+.badge{display:inline-block;padding:.18rem .55rem;border-radius:6px;font-size:.68rem;font-weight:700;letter-spacing:.02em}
+.badge-on{background:#ecfdf5;color:#059669;border:1px solid #a7f3d0}
+.badge-off{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.badge-new{background:#f5f3ff;color:#7c3aed;border:1px solid #ddd6fe}
+.up{color:var(--green)!important;font-weight:600}
+.down{color:var(--red)!important;font-weight:600}
+.neutral{color:var(--muted)}
+
+/* ── SM FILTER TAGS ── */
+.tag-select{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.85rem}
+.tag{
+  display:inline-flex;align-items:center;gap:.3rem;
+  background:#f0f2f7;color:var(--muted);
+  padding:.22rem .65rem;border-radius:7px;font-size:.75rem;font-weight:600;cursor:pointer;
+  border:1.5px solid transparent;transition:all .15s;
+}
+.tag.active{background:#eef1ff;color:#4f6ef7;border-color:#c7d2fb}
+.tag:hover{background:#eef1ff;color:#4f6ef7}
+
+/* ── SPINNER ── */
+.spinner-wrap{display:flex;align-items:center;gap:.75rem;padding:2.5rem;color:var(--muted);font-size:.875rem;justify-content:center}
+.spinner{width:22px;height:22px;border:2px solid #dce4f8;border-top-color:#4f6ef7;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{padding:3rem;text-align:center;color:var(--muted);font-size:.875rem}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;
+  background:#1e2a3a;color:#f0f4ff;
+  border-radius:12px;padding:.75rem 1.25rem;
+  font-size:.82rem;box-shadow:0 8px 24px rgba(0,0,0,.2);
+  display:none;
+}
+
+/* ── PAGE ── */
+.page{display:none}
+.page.active{display:block}
+
+/* ── SECTION LABEL ── */
+.section-label{font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin:1.25rem 0 .65rem;display:flex;align-items:center;gap:.6rem}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── DOMAIN MAP ── */
+.dm-grid{display:grid;gap:.4rem}
+.dm-row{
+  display:grid;grid-template-columns:180px 160px 1fr auto;
+  gap:.75rem;align-items:center;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:10px;padding:.6rem 1rem;
+  transition:background .15s;
+}
+.dm-row:hover{background:#f7f9fd}
+.dm-domain{font-size:.8rem;font-weight:600;color:#4f6ef7}
+.dm-name input{background:var(--light);border:1.5px solid var(--border);border-radius:7px;padding:.3rem .65rem;font-size:.8rem;width:100%;color:var(--text)}
+.dm-name input:focus{border-color:#4f6ef7;outline:none}
+.dm-camp{font-size:.74rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.toggle-btn{
+  width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;
+  position:relative;transition:background .2s;flex-shrink:0;
+}
+.toggle-btn.game{background:linear-gradient(135deg,#4f6ef7,#7c3aed)}
+.toggle-btn.nongame{background:#dde3ef}
+.toggle-btn::after{
+  content:'';position:absolute;top:3px;width:18px;height:18px;
+  border-radius:9px;background:#fff;transition:left .2s;
+  box-shadow:0 1px 4px rgba(0,0,0,.15);
+}
+.toggle-btn.game::after{left:23px}
+.toggle-btn.nongame::after{left:3px}
+.dm-section-head{display:flex;align-items:center;justify-content:space-between;margin:1.25rem 0 .6rem}
+.dm-section-head h3{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;display:flex;align-items:center;gap:.4rem}
+.dm-section-head h3.game{color:#6366f1}
+.dm-section-head h3.nongame{color:var(--red)}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">🎮</div>
+    <div class="logo-text">
+      <div class="title">Game UA</div>
+      <div class="sub">BuzzVil Dashboard</div>
+    </div>
+  </div>
+  <div class="sidebar-section">Menu</div>
+  <a class="nav-item active" data-page="home" onclick="goto('home')"><span class="icon">🏠</span>홈</a>
+  <a class="nav-item" data-page="settlement" onclick="goto('settlement')"><span class="icon">📋</span>정산</a>
+  <a class="nav-item" data-page="spend" onclick="goto('spend')"><span class="icon">📊</span>소진 현황</a>
+  <a class="nav-item" data-page="domain" onclick="goto('domain')"><span class="icon">🗂️</span>도메인 매핑</a>
+  <div class="sidebar-footer">ben.baek@buzzvil.com</div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- ══ 홈 ══ -->
+<div class="page active" id="page-home">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1>Game UA Dashboard</h1>
+      <p id="home-sub">로딩 중...</p>
+    </div>
+    <div class="topbar-right">
+      <button class="btn btn-ghost" onclick="loadHome(true)">🔄 새로고침</button>
+      <button class="btn btn-outline" id="btn-export-html" onclick="exportHomeHTML()" disabled>🌐 HTML 저장</button>
+      <button class="btn btn-outline" id="btn-export-csv" onclick="exportHomeCSV()" disabled>📥 CSV 저장</button>
+    </div>
+  </div>
+  <div id="home-kpi" class="kpi-row"></div>
+  <div class="chart-card" id="home-chart-wrap" style="display:none">
+    <div class="chart-card-header">
+      <h3>일별 소진 비교</h3>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#c7d2fb"></div><span id="legend-prev">전월</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#4f6ef7"></div><span id="legend-cur">당월</span></div>
+      </div>
+    </div>
+    <canvas id="home-chart" height="75"></canvas>
+  </div>
+  <div class="section-label">캠페인 목록</div>
+  <div id="home-sm-filter" class="tag-select"></div>
+  <div class="table-wrap" id="home-table-wrap">
+    <div class="spinner-wrap"><div class="spinner"></div>데이터 로딩 중... (약 30~60초)</div>
+  </div>
+</div>
+
+<!-- ══ 정산 ══ -->
+<div class="page" id="page-settlement">
+  <div class="page-header"><h1>📋 정산</h1><p>캠페인명으로 검색 → 컨버전 · 단가 · 소진금액 · 수수료 산출</p></div>
+  <div class="filter-bar">
+    <div class="input-group" style="flex:3"><label>캠페인명</label><input type="text" id="stl-kw" placeholder="게임명 입력 (비우면 전체 UA)"></div>
+    <div class="input-group"><label>연도</label><select id="stl-year"><option>2026</option><option>2025</option></select></div>
+    <div class="input-group"><label>월</label><select id="stl-month"></select></div>
+    <button class="btn btn-primary" id="stl-btn" onclick="loadSettlement()">조회</button>
+  </div>
+  <div id="stl-result"></div>
+</div>
+
+<!-- ══ 소진 현황 ══ -->
+<div class="page" id="page-spend">
+  <div class="page-header"><h1>📊 소진 현황</h1><p>UA 캠페인 일별 소진금액 피벗</p></div>
+  <div class="filter-bar">
+    <div class="input-group" style="flex:3"><label>캠페인 검색어</label><input type="text" id="spend-kw" placeholder="게임명 (비우면 전체 UA)"></div>
+    <div class="input-group"><label>시작일</label><input type="date" id="spend-start"></div>
+    <div class="input-group"><label>종료일</label><input type="date" id="spend-end"></div>
+    <button class="btn btn-primary" onclick="searchSpend()">검색</button>
+  </div>
+  <div id="spend-camp-select" style="display:none">
+    <div class="section-label">캠페인 선택</div>
+    <div id="spend-tags" class="tag-select"></div>
+    <div style="display:flex;gap:.5rem;margin-bottom:.75rem">
+      <button class="btn btn-ghost btn-sm" onclick="selectAllSpend(true)">전체 선택</button>
+      <button class="btn btn-ghost btn-sm" onclick="selectAllSpend(false)">전체 해제</button>
+      <button class="btn btn-primary" onclick="loadSpend()">리포트 조회</button>
+    </div>
+  </div>
+  <div id="spend-result"></div>
+</div>
+
+<!-- ══ 도메인 매핑 ══ -->
+<div class="page" id="page-domain">
+  <div class="topbar">
+    <div class="topbar-left"><h1>🗂️ 도메인 매핑</h1><p>도메인별 회사명 · 게임/비게임 분류 설정</p></div>
+    <div class="topbar-right">
+      <button class="btn btn-primary" onclick="saveDomainMap()">💾 저장</button>
+    </div>
+  </div>
+  <div id="dm-game-section">
+    <div class="dm-section-head"><h3 class="game">🎮 게임 UA</h3></div>
+    <div class="dm-grid" id="dm-game-rows"></div>
+  </div>
+  <div id="dm-nongame-section" style="margin-top:1.5rem">
+    <div class="dm-section-head"><h3 class="nongame">🚫 비게임</h3></div>
+    <div class="dm-grid" id="dm-nongame-rows"></div>
+  </div>
+</div>
+
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+const W = x => x==null||x===''?'-':`₩${Math.round(x).toLocaleString()}`
+const N = x => x==null?'-':Math.round(x).toLocaleString()
+const today = new Date()
+const fmtDate = d => d.toISOString().slice(0,10)
+
+function showToast(msg,ms=3000){
+  const t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'
+  setTimeout(()=>t.style.display='none',ms)
+}
+
+function deltaSpan(cur,prev,isNew){
+  if(isNew) return `<span class="badge badge-new">신규</span>`
+  if(!prev||!cur) return `<span class="neutral">-</span>`
+  const pct=((cur-prev)/prev*100).toFixed(1)
+  return `<span class="${pct>=0?'up':'down'}">${pct>=0?'▲':'▼'}${Math.abs(pct)}%</span>`
+}
+
+function goto(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'))
+  document.getElementById('page-'+page).classList.add('active')
+  document.querySelector(`[data-page="${page}"]`).classList.add('active')
+  if(page==='home'&&!homeLoaded) loadHome(false)
+  if(page==='domain') loadDomainMap()
+}
+
+/* ══ HOME ══ */
+let homeData=null, homeLoaded=false, homeChart=null, homeSmFilter=new Set()
+
+async function loadHome(force=false){
+  if(!force&&homeLoaded) return
+  homeLoaded=false; homeData=null
+  document.getElementById('home-table-wrap').innerHTML=`<div class="spinner-wrap"><div class="spinner"></div>데이터 로딩 중... (약 30~60초)</div>`
+  document.getElementById('home-kpi').innerHTML=''
+  document.getElementById('home-chart-wrap').style.display='none'
+  document.getElementById('btn-export-html').disabled=true
+  document.getElementById('btn-export-csv').disabled=true
+  if(force) await fetch('/api/refresh_cache',{method:'POST'})
+  const {job_id}=await(await fetch('/api/jobs/home',{method:'POST'})).json()
+  const poll=setInterval(async()=>{
+    const j=await(await fetch(`/api/jobs/${job_id}`)).json()
+    if(j.status==='done'){clearInterval(poll);homeData=j.result;homeLoaded=true;renderHome()}
+    else if(j.status==='error'){clearInterval(poll);document.getElementById('home-table-wrap').innerHTML=`<div class="empty">오류: ${j.result}<br><br>dsh 로그인 후 🔄 새로고침</div>`}
+  },3000)
+}
+
+function renderHome(){
+  const {rows,daily_cur,daily_prev,cur_month,prev_month,cur_year}=homeData
+  const active=rows.filter(r=>r.cur_cost>0)
+  const allPrevTotal=rows.reduce((a,r)=>a+r.prev_cost,0)
+  const totalCur=active.reduce((a,r)=>a+r.cur_cost,0)
+  const activePrev=rows.filter(r=>r.prev_cost>0).length
+  const curPrevTotal=active.reduce((a,r)=>a+r.prev_cost,0)
+  const pctCost=curPrevTotal?((totalCur-curPrevTotal)/curPrevTotal*100).toFixed(1):null
+  const pctCamp=activePrev?active.length-activePrev:null
+
+  document.getElementById('home-sub').textContent=`${cur_year}년 ${cur_month}월 · 게임 UA 캠페인 현황`
+  const costArrow = pctCost!=null ? (pctCost>=0?'▲':'▼') : ''
+  const campArrow = pctCamp!=null ? (pctCamp>=0?'▲':'▼') : ''
+  document.getElementById('home-kpi').innerHTML=`
+    <div class="kpi-card">
+      <div class="kpi-label">당월 소진액 <span class="info">ⓘ</span></div>
+      <div class="kpi-value">${W(totalCur)}</div>
+      <div class="kpi-divider"></div>
+      <div class="kpi-footer">
+        ${pctCost!=null
+          ? `<span class="${pctCost>=0?'kpi-badge-up':'kpi-badge-down'}">${costArrow} ${Math.abs(pctCost)}%</span><span class="lbl">vs 전월 동기간</span>`
+          : `<span class="lbl">전월 데이터 없음</span>`}
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">운영 캠페인 <span class="info">ⓘ</span></div>
+      <div class="kpi-value">${active.length}개</div>
+      <div class="kpi-divider"></div>
+      <div class="kpi-footer">
+        ${pctCamp!=null
+          ? `<span class="${pctCamp>=0?'kpi-badge-up':'kpi-badge-down'}">${campArrow} ${Math.abs(pctCamp)}개</span><span class="lbl">vs 전월</span>`
+          : `<span class="lbl">전월 데이터 없음</span>`}
+      </div>
+    </div>`
+
+  renderHomeChart(daily_cur,daily_prev,cur_month,prev_month)
+
+  const managers=[...new Set(active.map(r=>r.sales_manager))].sort()
+  homeSmFilter=new Set(managers)
+  document.getElementById('home-sm-filter').innerHTML=managers.map(m=>`<div class="tag active" onclick="toggleSM('${m}',this)">${m}</div>`).join('')
+  renderHomeTable(active,allPrevTotal)
+  document.getElementById('btn-export-html').disabled=false
+  document.getElementById('btn-export-csv').disabled=false
+}
+
+function toggleSM(name,el){
+  homeSmFilter.has(name)?homeSmFilter.delete(name):homeSmFilter.add(name)
+  el.classList.toggle('active')
+  const active=homeData.rows.filter(r=>r.cur_cost>0)
+  renderHomeTable(active,homeData.rows.reduce((a,r)=>a+r.prev_cost,0))
+}
+
+function renderHomeTable(allActive,allPrev){
+  const filtered=allActive.filter(r=>!homeSmFilter.size||homeSmFilter.has(r.sales_manager))
+  const totCur=filtered.reduce((a,r)=>a+r.cur_cost,0)
+  const totPrev=allPrev
+  const {cur_month}=homeData
+
+  const dataRows=filtered.map(r=>`<tr>
+    <td><span class="badge ${r.is_closed?'badge-off':'badge-on'}">${r.is_closed?'OFF':'ON'}</span></td>
+    <td>${r.company}</td>
+    <td>${r.sales_manager}</td>
+    <td style="max-width:320px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${r.name}">${r.name}</td>
+    <td style="text-align:right;font-weight:600;color:#1a1f36">${W(r.cur_cost)}</td>
+    <td style="text-align:right">${r.is_new?'-':W(r.prev_cost)}</td>
+    <td>${deltaSpan(r.cur_cost,r.prev_cost,r.is_new)}</td>
+  </tr>`).join('')
+
+  document.getElementById('home-table-wrap').innerHTML=`
+    <div class="table-header">
+      <span class="table-title">캠페인 목록 <span style="color:var(--muted);font-weight:500">(${filtered.length}개)</span></span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>상태</th><th>광고주</th><th>Sales Manager</th><th>캠페인명</th>
+          <th style="text-align:right">${cur_month}월 소진</th>
+          <th style="text-align:right">전월 동기간</th>
+          <th>전월비</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="summary-row">
+          <td colspan="3" style="color:var(--muted);font-size:.75rem;font-weight:600">합계</td>
+          <td></td>
+          <td style="text-align:right">${W(totCur)}</td>
+          <td style="text-align:right">${W(totPrev)}</td>
+          <td>${deltaSpan(totCur,totPrev,false)}</td>
+        </tr>
+        ${dataRows}
+      </tbody>
+    </table>`
+}
+
+function renderHomeChart(daily_cur,daily_prev,cur_month,prev_month){
+  document.getElementById('home-chart-wrap').style.display='block'
+  document.getElementById('legend-prev').textContent=`${prev_month}월`
+  document.getElementById('legend-cur').textContent=`${cur_month}월`
+  const curByDay={},prevByDay={}
+  Object.entries(daily_cur).forEach(([d,v])=>{const day=parseInt(d.split('-')[2]);curByDay[day]=(curByDay[day]||0)+v})
+  Object.entries(daily_prev).forEach(([d,v])=>{const day=parseInt(d.split('-')[2]);prevByDay[day]=(prevByDay[day]||0)+v})
+  const days=[...new Set([...Object.keys(curByDay),...Object.keys(prevByDay)].map(Number))].sort((a,b)=>a-b)
+  if(homeChart) homeChart.destroy()
+  homeChart=new Chart(document.getElementById('home-chart'),{
+    type:'bar',
+    data:{
+      labels:days,
+      datasets:[
+        {label:`${prev_month}월`,data:days.map(d=>prevByDay[d]||0),backgroundColor:'#c7d2fb',borderRadius:5,barPercentage:.7},
+        {label:`${cur_month}월`,data:days.map(d=>curByDay[d]||0),backgroundColor:'#4f6ef7',borderRadius:5,barPercentage:.7},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:true,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`₩${ctx.raw.toLocaleString()}`}}},
+      scales:{
+        x:{grid:{color:'#f0f2f7'},ticks:{color:'#a0aab8',font:{size:10}}},
+        y:{grid:{color:'#f0f2f7'},ticks:{color:'#a0aab8',font:{size:10},callback:v=>'₩'+v.toLocaleString()}}
+      }
+    }
+  })
+}
+
+function exportHomeHTML(){
+  if(!homeData) return
+  const {rows,cur_month,prev_month,cur_year}=homeData
+  const active=rows.filter(r=>r.cur_cost>0).filter(r=>!homeSmFilter.size||homeSmFilter.has(r.sales_manager))
+  const totCur=active.reduce((a,r)=>a+r.cur_cost,0)
+  const totPrev=rows.reduce((a,r)=>a+r.prev_cost,0)
+  const costDiff=totCur-totPrev
+  const costPct=totPrev?((costDiff/totPrev)*100).toFixed(1):null
+  const prevActive=rows.filter(r=>r.prev_cost>0).length
+  const campDiff=active.length-prevActive
+
+  // 각 행 데이터 (정렬용 data-* 포함)
+  const trows=active.map(r=>{
+    const pct=(!r.is_new&&r.prev_cost)?((r.cur_cost-r.prev_cost)/r.prev_cost*100):null
+    const deltaColor=r.is_new?'#7c3aed':pct==null?'#8a94a6':pct>=0?'#059669':'#dc2626'
+    const deltaTxt=r.is_new?'신규':pct==null?'-':(pct>=0?'▲':'▼')+Math.abs(pct).toFixed(1)+'%'
+    const deltaBg=r.is_new?'#f5f3ff':pct==null?'transparent':pct>=0?'#ecfdf5':'#fef2f2'
+    return `<tr>
+      <td data-v="${r.is_closed?1:0}"><span style="display:inline-block;padding:.15rem .5rem;border-radius:5px;font-size:.7rem;font-weight:700;background:${r.is_closed?'#fef2f2':'#ecfdf5'};color:${r.is_closed?'#dc2626':'#059669'};border:1px solid ${r.is_closed?'#fecaca':'#a7f3d0'}">${r.is_closed?'OFF':'ON'}</span></td>
+      <td data-v="${r.company}">${r.company}</td>
+      <td data-v="${r.sales_manager}">${r.sales_manager}</td>
+      <td data-v="${r.name}" style="max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.name}</td>
+      <td data-v="${r.cur_cost}" style="text-align:right;font-weight:600">${W(r.cur_cost)}</td>
+      <td data-v="${r.is_new?0:r.prev_cost}" style="text-align:right">${r.is_new?'-':W(r.prev_cost)}</td>
+      <td data-v="${r.is_new?-9999:pct??0}" style="text-align:center"><span style="display:inline-block;padding:.15rem .55rem;border-radius:5px;font-size:.75rem;font-weight:700;background:${deltaBg};color:${deltaColor}">${deltaTxt}</span></td>
+    </tr>`
+  }).join('')
+
+  const html=`<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8">
+<title>Game UA ${cur_year}년 ${cur_month}월</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f0f2f7;color:#1e2a3a;padding:2rem;min-width:900px}
+h1{font-size:1.45rem;font-weight:800;margin-bottom:.25rem;letter-spacing:-.03em}
+.sub{color:#8a96a8;font-size:.82rem;margin-bottom:1.5rem}
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+.kpi{background:#fff;border-radius:14px;padding:1.3rem 1.5rem;border:1px solid #e8edf5;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.kpi-label{font-size:.67rem;text-transform:uppercase;letter-spacing:.08em;color:#8a96a8;margin-bottom:.4rem;font-weight:600}
+.kpi-value{font-size:1.55rem;font-weight:800;color:#1e2a3a;letter-spacing:-.03em;margin-bottom:.5rem}
+.kpi-divider{height:1px;background:#e8edf5;margin:.5rem 0}
+.kpi-footer{font-size:.78rem;display:flex;align-items:center;gap:.4rem;color:#8a96a8}
+.up{color:#059669;font-weight:700}.down{color:#dc2626;font-weight:700}
+.table-wrap{background:#fff;border:1px solid #e8edf5;border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+table{width:100%;border-collapse:collapse}
+thead th{background:#f7f9fc;color:#8a96a8;font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;padding:.65rem 1rem;text-align:left;border-bottom:1px solid #e8edf5;white-space:nowrap;cursor:pointer;user-select:none;position:relative}
+thead th:hover{background:#eef0f8;color:#4f6ef7}
+thead th.sort-asc::after{content:' ▲';color:#4f6ef7;font-size:.6rem}
+thead th.sort-desc::after{content:' ▼';color:#4f6ef7;font-size:.6rem}
+tbody td{padding:.6rem 1rem;font-size:.83rem;color:#3a4a5c;border-bottom:1px solid #f2f5fa}
+tbody tr:hover td{background:#f7f9fd}
+tbody tr:last-child td{border-bottom:none}
+tr.sum td{background:#f0f4ff;font-weight:700;color:#1e2a3a;border-bottom:2px solid #dce4f8;font-size:.83rem}
+.footer{margin-top:1.25rem;color:#c5cad5;font-size:.7rem;text-align:right}
+</style>
+</head>
+<body>
+<h1>🎮 Game UA Dashboard</h1>
+<div class="sub">${cur_year}년 ${cur_month}월 · ${new Date().toLocaleDateString('ko-KR')} 기준</div>
+<div class="kpi-row">
+  <div class="kpi">
+    <div class="kpi-label">당월 소진액</div>
+    <div class="kpi-value">${W(totCur)}</div>
+    <div class="kpi-divider"></div>
+    <div class="kpi-footer">
+      ${costPct!=null?`<span class="${costPct>=0?'up':'down'}">${costPct>=0?'▲':'▼'} ${Math.abs(costPct)}%</span><span>(${costDiff>=0?'+':''}${W(costDiff)}) vs 전월 동기간</span>`:'전월 데이터 없음'}
+    </div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">운영 캠페인</div>
+    <div class="kpi-value">${active.length}개</div>
+    <div class="kpi-divider"></div>
+    <div class="kpi-footer">
+      ${prevActive?`<span class="${campDiff>=0?'up':'down'}">${campDiff>=0?'▲':'▼'} ${Math.abs(campDiff)}개</span><span>vs 전월 (전월 ${prevActive}개)</span>`:'전월 데이터 없음'}
+    </div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">전월 동기간 소진 (전체)</div>
+    <div class="kpi-value">${W(totPrev)}</div>
+    <div class="kpi-divider"></div>
+    <div class="kpi-footer"><span>${prev_month}월 동기간 기준</span></div>
+  </div>
+</div>
+<div class="table-wrap">
+<table id="main-table">
+  <thead><tr>
+    <th onclick="sortTable(0)">상태</th>
+    <th onclick="sortTable(1)">광고주</th>
+    <th onclick="sortTable(2)">Sales Manager</th>
+    <th onclick="sortTable(3)">캠페인명</th>
+    <th onclick="sortTable(4)" style="text-align:right">${cur_month}월 소진</th>
+    <th onclick="sortTable(5)" style="text-align:right">전월 동기간</th>
+    <th onclick="sortTable(6)" style="text-align:center">전월비</th>
+  </tr></thead>
+  <tbody>
+    <tr class="sum">
+      <td colspan="3" style="color:#8a96a8;font-size:.75rem">합계</td><td></td>
+      <td style="text-align:right">${W(totCur)}</td>
+      <td style="text-align:right">${W(totPrev)}</td>
+      <td></td>
+    </tr>
+    ${trows}
+  </tbody>
+</table>
+</div>
+<div class="footer">Generated by BuzzVil Game UA Dashboard · ${new Date().toLocaleString('ko-KR')}</div>
+<script>
+let sortCol=-1,sortAsc=true
+function sortTable(col){
+  const tb=document.getElementById('main-table')
+  const ths=tb.querySelectorAll('thead th')
+  ths.forEach(t=>{t.classList.remove('sort-asc','sort-desc')})
+  if(sortCol===col){sortAsc=!sortAsc}else{sortCol=col;sortAsc=true}
+  ths[col].classList.add(sortAsc?'sort-asc':'sort-desc')
+  const tbody=tb.querySelector('tbody')
+  const rows=[...tbody.querySelectorAll('tr:not(.sum)')]
+  rows.sort((a,b)=>{
+    const av=a.cells[col]?.dataset.v??''
+    const bv=b.cells[col]?.dataset.v??''
+    const an=parseFloat(av),bn=parseFloat(bv)
+    const res=isNaN(an)||isNaN(bn)?av.localeCompare(bv,'ko'):an-bn
+    return sortAsc?res:-res
+  })
+  const sumRow=tbody.querySelector('tr.sum')
+  tbody.innerHTML=''; tbody.appendChild(sumRow)
+  rows.forEach(r=>tbody.appendChild(r))
+}
+<\/script>
+</body></html>`
+
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}))
+  a.download=`게임UA_홈_${cur_year}${String(cur_month).padStart(2,'0')}.html`; a.click()
+}
+
+function exportHomeCSV(){
+  if(!homeData) return
+  const {rows,cur_month}=homeData
+  const active=rows.filter(r=>r.cur_cost>0).filter(r=>!homeSmFilter.size||homeSmFilter.has(r.sales_manager))
+  const lines=[['상태','광고주','Sales Manager','캠페인명',`${cur_month}월 소진`,'전월 동기간','전월비']]
+  active.forEach(r=>lines.push([r.is_closed?'OFF':'ON',r.company,r.sales_manager,r.name,r.cur_cost,r.is_new?0:r.prev_cost,r.is_new?'신규':(!r.prev_cost?'-':(((r.cur_cost-r.prev_cost)/r.prev_cost*100)>=0?'▲':'▼')+Math.abs(((r.cur_cost-r.prev_cost)/r.prev_cost*100)).toFixed(1)+'%')]))
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['\uFEFF'+lines.map(l=>l.join(',')).join('\n')],{type:'text/csv'}))
+  a.download=`게임UA_홈_${homeData.cur_year}${String(homeData.cur_month).padStart(2,'0')}.csv`; a.click()
+}
+
+/* ══ SETTLEMENT ══ */
+async function loadSettlement(){
+  const kw=document.getElementById('stl-kw').value
+  const year=document.getElementById('stl-year').value
+  const month=document.getElementById('stl-month').value
+  const btn=document.getElementById('stl-btn')
+  btn.disabled=true; btn.textContent='조회 중...'
+  document.getElementById('stl-result').innerHTML=`<div class="spinner-wrap"><div class="spinner"></div>데이터 수집 중...</div>`
+  const res=await fetch('/api/settlement',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({keyword:kw,year,month})})
+  btn.disabled=false; btn.textContent='조회'
+  if(!res.ok){document.getElementById('stl-result').innerHTML=`<div class="empty">오류가 발생했습니다.</div>`;return}
+  const {results,period}=await res.json()
+  if(!results||!results.length){document.getElementById('stl-result').innerHTML=`<div class="empty">해당 기간 소진이 발생한 캠페인이 없습니다.</div>`;return}
+  renderSettlement(results,period)
+}
+
+function renderSettlement(results,period){
+  const companies=[...new Set(results.map(r=>r.company))].sort()
+  const managers=[...new Set(results.map(r=>r.sales_manager))].sort()
+  let selCompany='전체', selManagers=new Set(managers), selCamps=new Set(results.map(r=>r.name))
+
+  const filtered=()=>results.filter(r=>(selCompany==='전체'||r.company===selCompany)&&selManagers.has(r.sales_manager))
+  const selected=(pool)=>pool.filter(r=>selCamps.has(r.name))
+
+  function renderAll(){
+    const pool=filtered(), sel=selected(pool)
+    const tc=sel.reduce((a,r)=>a+r.conv,0), ts=sel.reduce((a,r)=>a+r.cost,0)
+    const tf=sel.reduce((a,r)=>a+Math.round(r.cost*r.fee_rate/100),0), ac=tc?Math.round(ts/tc):0
+    document.getElementById('stl-result').innerHTML=`
+      <div class="kpi-row" style="margin-bottom:1.25rem">
+        <div class="kpi-card"><div class="kpi-icon kpi-icon-1">🎯</div><div class="kpi-info"><div class="kpi-label">총 컨버전</div><div class="kpi-value">${N(tc)}건</div><div class="kpi-sub">${period}</div></div></div>
+        <div class="kpi-card"><div class="kpi-icon kpi-icon-3">💵</div><div class="kpi-info"><div class="kpi-label">평균 CPA</div><div class="kpi-value">${W(ac)}</div><div class="kpi-sub">컨버전당 비용</div></div></div>
+        <div class="kpi-card"><div class="kpi-icon kpi-icon-2">💰</div><div class="kpi-info"><div class="kpi-label">총 소진금액</div><div class="kpi-value">${W(ts)}</div><div class="kpi-sub">${period}</div></div></div>
+        <div class="kpi-card"><div class="kpi-icon kpi-icon-4">📈</div><div class="kpi-info"><div class="kpi-label">총 수수료</div><div class="kpi-value">${W(tf)}</div><div class="kpi-sub">수수료 합계</div></div></div>
+      </div>
+      <div style="display:flex;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap;align-items:flex-end">
+        <div class="input-group"><label>광고주</label><select id="stl-co" onchange="stlCoChange(this.value)" style="min-width:160px"><option>전체</option>${companies.map(c=>`<option>${c}</option>`).join('')}</select></div>
+        <div class="input-group" style="flex:1"><label>Sales Manager</label><div class="tag-select">${managers.map(m=>`<div class="tag active" onclick="stlToggleSM('${m}',this)">${m}</div>`).join('')}</div></div>
+      </div>
+      <div class="section-label">캠페인 선택</div>
+      <div class="tag-select" id="stl-camp-tags" style="margin-bottom:.75rem">${pool.map(r=>`<div class="tag active" data-name="${r.name}" onclick="stlToggleCamp('${r.name}',this)">${r.name}</div>`).join('')}</div>
+      <div class="table-wrap" id="stl-table"></div>
+      <div style="margin-top:.75rem"><button class="btn btn-outline" onclick="exportStlCSV()">📥 CSV 저장</button></div>`
+    renderStlTable(sel,tc,ts,tf)
+    window.stlCoChange=v=>{selCompany=v;const p=filtered();selCamps=new Set(p.map(r=>r.name));renderAll()}
+    window.stlToggleSM=(m,el)=>{selManagers.has(m)?selManagers.delete(m):selManagers.add(m);el.classList.toggle('active');const p=filtered();selCamps=new Set(p.map(r=>r.name));renderAll()}
+    window.stlToggleCamp=(n,el)=>{selCamps.has(n)?selCamps.delete(n):selCamps.add(n);el.classList.toggle('active');renderAll()}
+    window.exportStlCSV=()=>{const s=selected(filtered());const lines=[['Sales Manager','캠페인명','컨버전','단가','소진금액','수수료율(%)','수수료']];s.forEach(r=>lines.push([r.sales_manager,r.name,r.conv,r.conv?Math.round(r.cost/r.conv):0,r.cost,r.fee_rate,Math.round(r.cost*r.fee_rate/100)]));const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+lines.map(l=>l.join(',')).join('\n')],{type:'text/csv'}));a.download=`정산_${period}.csv`;a.click()}
+  }
+  renderAll()
+}
+
+function renderStlTable(rows,tc,ts,tf){
+  const trows=rows.map(r=>`<tr><td>${r.sales_manager}</td><td>${r.name}</td><td style="text-align:right">${N(r.conv)}</td><td style="text-align:right">${W(r.conv?Math.round(r.cost/r.conv):0)}</td><td style="text-align:right;font-weight:600">${W(r.cost)}</td><td style="text-align:right">${r.fee_rate}%</td><td style="text-align:right">${W(Math.round(r.cost*r.fee_rate/100))}</td></tr>`).join('')
+  document.getElementById('stl-table').innerHTML=`
+    <div class="table-header"><span class="table-title">정산 내역 <span style="color:var(--muted);font-weight:500">(${rows.length}개)</span></span></div>
+    <table><thead><tr><th>Sales Manager</th><th>캠페인명</th><th style="text-align:right">컨버전</th><th style="text-align:right">단가</th><th style="text-align:right">소진금액</th><th style="text-align:right">수수료율</th><th style="text-align:right">수수료</th></tr></thead>
+    <tbody>
+      <tr class="summary-row"><td colspan="2" style="color:var(--muted);font-size:.75rem;font-weight:600">합계</td><td style="text-align:right">${N(tc)}건</td><td></td><td style="text-align:right">${W(ts)}</td><td></td><td style="text-align:right">${W(tf)}</td></tr>
+      ${trows}
+    </tbody></table>`
+}
+
+/* ══ SPEND ══ */
+let spendCamps=[]
+async function searchSpend(){
+  const kw=document.getElementById('spend-kw').value
+  const {camps}=await(await fetch('/api/spend',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({keyword:kw,start:'2000-01-01',end:'2000-01-01',selected:[]})})).json()
+  spendCamps=camps||[]
+  document.getElementById('spend-camp-select').style.display='block'
+  document.getElementById('spend-tags').innerHTML=spendCamps.map(n=>`<div class="tag active" data-name="${n}" onclick="this.classList.toggle('active')">${n}</div>`).join('')
+}
+function selectAllSpend(v){document.querySelectorAll('#spend-tags .tag').forEach(t=>v?t.classList.add('active'):t.classList.remove('active'))}
+async function loadSpend(){
+  const selected=[...document.querySelectorAll('#spend-tags .tag.active')].map(t=>t.dataset.name)
+  if(!selected.length){showToast('캠페인을 선택하세요');return}
+  const kw=document.getElementById('spend-kw').value
+  const start=document.getElementById('spend-start').value
+  const end=document.getElementById('spend-end').value
+  document.getElementById('spend-result').innerHTML=`<div class="spinner-wrap"><div class="spinner"></div>리포트 조회 중...</div>`
+  const {rows}=await(await fetch('/api/spend',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({keyword:kw,start,end,selected})})).json()
+  if(!rows||!rows.length){document.getElementById('spend-result').innerHTML=`<div class="empty">데이터 없음</div>`;return}
+  const dates=[...new Set(rows.map(r=>r.date))].sort()
+  const camps=[...new Set(rows.map(r=>r.campaign))]
+  const pivot={};camps.forEach(c=>{pivot[c]={};dates.forEach(d=>pivot[c][d]=0)})
+  rows.forEach(r=>pivot[r.campaign][r.date]+=r.cost)
+  const totals={};dates.forEach(d=>totals[d]=camps.reduce((a,c)=>a+(pivot[c][d]||0),0))
+  const campTotals={};camps.forEach(c=>campTotals[c]=dates.reduce((a,d)=>a+(pivot[c][d]||0),0))
+  const sorted=camps.sort((a,b)=>campTotals[b]-campTotals[a])
+  const shortDates=dates.map(d=>d.slice(5))
+  const thead=`<tr><th>캠페인</th>${shortDates.map(d=>`<th style="text-align:right">${d}</th>`).join('')}<th style="text-align:right">합계</th></tr>`
+  const tbody=sorted.map(c=>`<tr><td>${c}</td>${dates.map(d=>`<td style="text-align:right">${pivot[c][d]?pivot[c][d].toLocaleString():'-'}</td>`).join('')}<td style="text-align:right;font-weight:600">${campTotals[c].toLocaleString()}</td></tr>`).join('')
+  const tfoot=`<tr class="summary-row"><td>합계</td>${dates.map(d=>`<td style="text-align:right">${(totals[d]||0).toLocaleString()}</td>`).join('')}<td style="text-align:right">${Object.values(totals).reduce((a,b)=>a+b,0).toLocaleString()}</td></tr>`
+  document.getElementById('spend-result').innerHTML=`<div class="table-wrap" style="overflow-x:auto"><table><thead>${thead}</thead><tbody>${tfoot}${tbody}</tbody></table></div>`
+}
+
+/* ══ DOMAIN MAP ══ */
+let dmData={}
+async function loadDomainMap(){
+  dmData=await(await fetch('/api/domain_map')).json()
+  renderDomainMap()
+}
+function renderDomainMap(){
+  const game=Object.entries(dmData).filter(([,v])=>v.is_game)
+  const nongame=Object.entries(dmData).filter(([,v])=>!v.is_game)
+  const row=([k,v],isGame)=>`<div class="dm-row" data-domain="${k}">
+    <div class="dm-domain">${k}</div>
+    <div class="dm-name"><input type="text" value="${v.name||''}" onchange="dmData['${k}'].name=this.value"></div>
+    <div class="dm-camp" title="${v.recent_camp||''}">${v.recent_camp||'-'}</div>
+    <button class="toggle-btn ${isGame?'game':'nongame'}" onclick="dmToggle('${k}',this)"></button>
+  </div>`
+  document.getElementById('dm-game-rows').innerHTML=game.map(e=>row(e,true)).join('')
+  document.getElementById('dm-nongame-rows').innerHTML=nongame.map(e=>row(e,false)).join('')
+  document.querySelector('#dm-game-section .dm-section-head h3').textContent=`🎮 게임 UA (${game.length}개)`
+  document.querySelector('#dm-nongame-section .dm-section-head h3').textContent=`🚫 비게임 (${nongame.length}개)`
+}
+function dmToggle(domain){dmData[domain].is_game=!dmData[domain].is_game;renderDomainMap()}
+async function saveDomainMap(){
+  const res=await fetch('/api/domain_map',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(dmData)})
+  res.ok?showToast('✅ 저장 완료'):showToast('❌ 저장 실패')
+  if(res.ok) renderDomainMap()
+}
+
+/* ══ INIT ══ */
+;(function(){
+  const ms=document.getElementById('stl-month')
+  for(let i=1;i<=12;i++){const o=document.createElement('option');o.value=i;o.textContent=i+'월';ms.appendChild(o)}
+  ms.value=today.getMonth()+1
+  const y=today.getFullYear(),m=today.getMonth()+1
+  document.getElementById('spend-start').value=`${y}-${String(m).padStart(2,'0')}-01`
+  document.getElementById('spend-end').value=fmtDate(today)
+  loadHome(false)
+})()
+</script>
+</body>
+</html>
