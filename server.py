@@ -231,6 +231,19 @@ def api_refresh_cache():
         _session_cookie["value"] = None
     return jsonify({"ok": True})
 
+@app.route("/api/ping")
+def api_ping():
+    env_cookie = os.environ.get("SESSION_COOKIE", "")
+    cookie = get_cookie()
+    data, err = api_get("/ba/adgroups", {"search": "UA", "page_size": 1})
+    return jsonify({
+        "env_cookie_set": bool(env_cookie),
+        "env_cookie_prefix": env_cookie[:20] if env_cookie else None,
+        "cookie_loaded": bool(cookie),
+        "api_ok": data is not None,
+        "api_err": err,
+    })
+
 @app.route("/api/jobs/home", methods=["POST"])
 def start_home_job():
     today = date.today()
