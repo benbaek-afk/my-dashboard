@@ -27,11 +27,18 @@ _session_cookie = {"value": None}  # connect.sid 쿠키
 # Auth
 # ─────────────────────────────────────────────────────────────────────────────
 def get_cookie():
-    """유효한 세션 쿠키 반환. 없으면 로그인 시도."""
+    """유효한 세션 쿠키 반환."""
     with _cache_lock:
         if _session_cookie["value"]:
             return _session_cookie["value"]
-    # 로컬 session.yaml에서 읽기 시도
+    # 1) 환경변수 SESSION_COOKIE 우선 (Render 배포용)
+    env_cookie = os.environ.get("SESSION_COOKIE", "").strip()
+    if env_cookie:
+        with _cache_lock:
+            _session_cookie["value"] = env_cookie
+        return env_cookie
+    # 2) 로컬 session.yaml
+    import re
     session_paths = [
         os.path.expanduser("~/.config/dsh/session.yaml"),
         os.path.expanduser("~/Library/Application Support/dsh/session.yaml"),
@@ -41,7 +48,6 @@ def get_cookie():
             try:
                 with open(p) as f:
                     content = f.read()
-                import re
                 m = re.search(r'prod:\s*\n\s*cookie:\s*(\S+)', content)
                 if m:
                     cookie = m.group(1).strip()
